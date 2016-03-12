@@ -46,7 +46,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     private static final Typeface TIME_TYPEFACE = Typeface.create("sans-serif", Typeface.NORMAL);
     private static final Typeface DATE_TYPEFACE = Typeface.create("sans-serif-light", Typeface.NORMAL);
     private static final Typeface HIGH_TEMP_TYPEFACE = Typeface.create("sans-serif", Typeface.NORMAL);
-    private static final Typeface LOW_TEMP_TYPEFACE = Typeface.create("sans-serif", Typeface.NORMAL);
+    private static final Typeface LOW_TEMP_TYPEFACE = Typeface.create("sans-serif-light", Typeface.NORMAL);
 
     private static final long INTERACTIVE_UPDATE_RATE_MS = 60000;
 
@@ -80,6 +80,9 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         boolean isAmbient;
         Calendar currentTime;
 
+        int highTemp = 76;
+        int lowTemp = 15;
+
         float timeOffsetX;
         float timeOffsetY;
 
@@ -88,6 +91,12 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
         float lineOffsetX;
         float lineOffsetY;
+
+        float currentWeatherOffsetY;
+
+        float currentWeatherBitmapOffsetX;
+        float highTempOffsetX;
+        float lowTempOffsetX;
 
         boolean supportsLowBitAmbient;
 
@@ -106,6 +115,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             timeOffsetY = resources.getDimension(R.dimen.digital_y_offset);
             dateOffsetY = resources.getDimension(R.dimen.date_y_offset);
             lineOffsetY = resources.getDimension(R.dimen.line_y_offset);
+            currentWeatherOffsetY = dateOffsetY + 75;
 
             initializeBackgroundPaint();
             initializeTimePaint();
@@ -215,9 +225,11 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
             lineOffsetX = resources.getDimension(isRound ? R.dimen.round_line_x_offset : R.dimen.square_line_x_offset);
 
+            highTempOffsetX = dateOffsetX + 95;
             float highTempTextSize = resources.getDimension(isRound ? R.dimen.round_high_temp_text_size : R.dimen.square_high_temp_text_size);
 
 
+            lowTempOffsetX = dateOffsetX + 160;
             float lowTempTextSize = resources.getDimension(isRound ? R.dimen.round_low_temp_text_size : R.dimen.square_low_temp_text_size);
 
             timePaint.setTextSize(textSize);
@@ -300,6 +312,13 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
         private void drawHighAndLowTemp(Canvas canvas){
 
+            String tempFormat = "%d\u00b0";
+
+            String highTempString = String.format(tempFormat, highTemp);
+            String lowTempString = String.format(tempFormat, lowTemp);
+
+            canvas.drawText(highTempString, highTempOffsetX, currentWeatherOffsetY, highTempPaint);
+            canvas.drawText(lowTempString, lowTempOffsetX, currentWeatherOffsetY, lowTempPaint);
         }
 
 

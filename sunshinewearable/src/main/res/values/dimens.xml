@@ -7,14 +7,15 @@
     <dimen name="digital_y_offset">90dp</dimen>
     <dimen name="round_date_text_size">20dp</dimen>
     <dimen name="square_date_text_size">20dp</dimen>
-    <dimen name="round_high_temp_text_size">35dp</dimen>
-    <dimen name="square_high_temp_text_size">35dp</dimen>
-    <dimen name="round_low_temp_text_size">35dp</dimen>
-    <dimen name="square_low_temp_text_size">35dp</dimen>
+    <dimen name="round_high_temp_text_size">25dp</dimen>
+    <dimen name="square_high_temp_text_size">25dp</dimen>
+    <dimen name="round_low_temp_text_size">25dp</dimen>
+    <dimen name="square_low_temp_text_size">25dp</dimen>
     <dimen name="date_y_offset">115dp</dimen>
     <dimen name="round_date_x_offset">30dp</dimen>
     <dimen name="square_date_x_offset">25dp</dimen>
     <dimen name="line_y_offset">130dp</dimen>
     <dimen name="round_line_x_offset">90dp</dimen>
     <dimen name="square_line_x_offset">90dp</dimen>
+    <dimen name="current_weather_y_offset">190dp</dimen>
 </resources>
