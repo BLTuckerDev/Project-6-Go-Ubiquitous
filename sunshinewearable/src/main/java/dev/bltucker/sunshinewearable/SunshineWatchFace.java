@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -98,6 +100,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         float highTempOffsetX;
         float lowTempOffsetX;
 
+        Bitmap currentConditionsImage;
+
         boolean supportsLowBitAmbient;
 
         @Override
@@ -123,6 +127,9 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             initializeLinePaint();
             initializeHighTempPaint();
             initializeLowTempPaint();
+
+            Bitmap icon = BitmapFactory.decodeResource(resources, R.drawable.art_clear);
+            currentConditionsImage = Bitmap.createScaledBitmap(icon, 64, 64, true);
 
             currentTime = Calendar.getInstance();
         }
@@ -307,7 +314,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         }
 
         private void drawWeatherIcon(Canvas canvas){
-
+            canvas.drawBitmap(currentConditionsImage, dateOffsetX + 10, currentWeatherOffsetY - 45, null);
         }
 
         private void drawHighAndLowTemp(Canvas canvas){
