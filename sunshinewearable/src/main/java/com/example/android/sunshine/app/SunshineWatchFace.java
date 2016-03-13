@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package dev.bltucker.sunshinewearable;
+package com.example.android.sunshine.app;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -44,6 +43,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 
+
 public class SunshineWatchFace extends CanvasWatchFaceService {
     private static final Typeface TIME_TYPEFACE = Typeface.create("sans-serif", Typeface.NORMAL);
     private static final Typeface DATE_TYPEFACE = Typeface.create("sans-serif-light", Typeface.NORMAL);
@@ -54,6 +54,12 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
     private static final int MSG_UPDATE_TIME = 0;
     private static final int MSG_UPDATE_WEATHER = 1;
+
+    static Bitmap currentConditionsImage;
+
+    static int highTemp = Integer.MIN_VALUE;
+    static int lowTemp = Integer.MIN_VALUE;
+
 
     @Override
     public Engine onCreateEngine() {
@@ -82,9 +88,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         boolean isAmbient;
         Calendar currentTime;
 
-        int highTemp = 76;
-        int lowTemp = 15;
-
         float timeOffsetX;
         float timeOffsetY;
 
@@ -99,8 +102,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         float currentWeatherBitmapOffsetX;
         float highTempOffsetX;
         float lowTempOffsetX;
-
-        Bitmap currentConditionsImage;
 
         boolean supportsLowBitAmbient;
 
@@ -127,9 +128,6 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             initializeLinePaint();
             initializeHighTempPaint();
             initializeLowTempPaint();
-
-            Bitmap icon = BitmapFactory.decodeResource(resources, R.drawable.art_clear);
-            currentConditionsImage = Bitmap.createScaledBitmap(icon, 64, 64, true);
 
             currentTime = Calendar.getInstance();
         }
@@ -314,10 +312,16 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         }
 
         private void drawWeatherIcon(Canvas canvas){
-            canvas.drawBitmap(currentConditionsImage, dateOffsetX + 10, currentWeatherOffsetY - 45, null);
+            if(currentConditionsImage != null){
+                canvas.drawBitmap(currentConditionsImage, dateOffsetX + 10, currentWeatherOffsetY - 45, null);
+            }
         }
 
         private void drawHighAndLowTemp(Canvas canvas){
+
+            if(highTemp == Integer.MIN_VALUE || lowTemp == Integer.MIN_VALUE){
+                return;
+            }
 
             String tempFormat = "%d\u00b0";
 

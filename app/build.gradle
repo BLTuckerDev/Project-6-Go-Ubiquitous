@@ -2,21 +2,33 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.example.android.sunshine.app"
-        minSdkVersion 10
-        targetSdkVersion 22
+        minSdkVersion 18
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
+
+    signingConfigs {
+
+        release {
+            storeFile file('sunshine.keystore')
+            storePassword "sunshine"
+            keyAlias "sunshine"
+            keyPassword "sunshine"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField 'String', 'OPEN_WEATHER_MAP_API_KEY', "\"" + OPEN_WEATHER_MAP_API_KEY + "\""
+            signingConfig signingConfigs.release
 
         }
         debug{
@@ -36,6 +48,8 @@ dependencies {
     compile 'com.android.support:design:22.2.0'
     compile 'com.android.support:recyclerview-v7:22.2.0'
     compile 'com.google.android.apps.muzei:muzei-api:2.0'
-    compile 'com.google.android.gms:play-services-gcm:7.5.0'
-    compile 'com.google.android.gms:play-services-location:7.5.0'
+    compile 'com.google.android.gms:play-services-gcm:8.4.0'
+    compile 'com.google.android.gms:play-services-location:8.4.0'
+    compile 'com.google.android.gms:play-services-wearable:8.4.0'
+    wearApp project(":sunshinewearable")
 }
