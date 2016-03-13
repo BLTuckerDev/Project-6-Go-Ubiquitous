@@ -537,12 +537,17 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
         PutDataMapRequest weatherUpdateRequest = PutDataMapRequest.create("/SunshineWearableListenerService/WeatherData");
 
+        //TODO when the watch service starts, notify the app to sync so taht this code will then update the wearable
 
+        double highTemp = query.getDouble(INDEX_MAX_TEMP);
+        double lowTemp = query.getDouble(INDEX_MIN_TEMP);
 
-        weatherUpdateRequest.getDataMap().putInt("high", (int) query.getDouble(INDEX_MAX_TEMP));
-        weatherUpdateRequest.getDataMap().putInt("low", (int) query.getDouble(INDEX_MIN_TEMP));
+        int highTempInt = Utility.isMetric(context) ? (int)highTemp : (int)((highTemp * 1.8) + 32);
+        int lowTempInt = Utility.isMetric(context) ? (int)lowTemp : (int)((lowTemp * 1.8) + 32);
+
+        weatherUpdateRequest.getDataMap().putInt("high", highTempInt);
+        weatherUpdateRequest.getDataMap().putInt("low", lowTempInt);
         weatherUpdateRequest.getDataMap().putLong("timestamp", System.currentTimeMillis());
-
 
         final ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
         String artUrl = Utility.getArtUrlForWeatherCondition(context, query.getInt(INDEX_WEATHER_ID));
@@ -559,21 +564,19 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                             .into(size, size)
                             .get();
 
-
             weatherIcon.compress(Bitmap.CompressFormat.PNG, 100, imageBytes);
             Asset weatherIconAsset = Asset.createFromBytes(imageBytes.toByteArray());
             weatherUpdateRequest.getDataMap().putAsset("weatherIcon", weatherIconAsset);
-
-            PutDataRequest putDataRequest = weatherUpdateRequest.asPutDataRequest();
-
-            GoogleApiClient googleApiClient = getGoogleApiClient();
-            googleApiClient.connect();
-
-            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
-
         } catch(Exception ex){
             Log.e(LOG_TAG, "Failed to notify wearable");
         }
+
+        PutDataRequest putDataRequest = weatherUpdateRequest.asPutDataRequest();
+
+        GoogleApiClient googleApiClient = getGoogleApiClient();
+        googleApiClient.connect();
+
+        Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
     }
 
     private GoogleApiClient getGoogleApiClient(){

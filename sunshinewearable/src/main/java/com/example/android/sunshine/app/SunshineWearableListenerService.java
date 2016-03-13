@@ -51,6 +51,7 @@ public class SunshineWearableListenerService extends WearableListenerService {
         }
 
         SunshineWatchFace.currentConditionsImage = BitmapFactory.decodeStream(assetInputStream);
+        SunshineWatchFace.updateWatchFace();
     }
 
     private GoogleApiClient getGoogleApiClient(){

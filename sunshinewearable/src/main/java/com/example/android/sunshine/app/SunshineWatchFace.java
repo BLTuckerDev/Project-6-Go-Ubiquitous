@@ -53,18 +53,32 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     private static final long INTERACTIVE_UPDATE_RATE_MS = 60000;
 
     private static final int MSG_UPDATE_TIME = 0;
-    private static final int MSG_UPDATE_WEATHER = 1;
 
     static Bitmap currentConditionsImage;
 
     static int highTemp = Integer.MIN_VALUE;
     static int lowTemp = Integer.MIN_VALUE;
 
+    private static Engine engineInstance;
+
+    public static void updateWatchFace() {
+        if(engineInstance != null){
+            engineInstance.invalidate();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        engineInstance = null;
+        super.onDestroy();
+    }
 
     @Override
     public Engine onCreateEngine() {
-        return new Engine();
+        engineInstance = new Engine();
+        return engineInstance;
     }
+
 
     private class Engine extends CanvasWatchFaceService.Engine {
 
