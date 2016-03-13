@@ -537,22 +537,43 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
         PutDataMapRequest weatherUpdateRequest = PutDataMapRequest.create("/SunshineWearableListenerService/WeatherData");
 
+
+
         weatherUpdateRequest.getDataMap().putInt("high", (int) query.getDouble(INDEX_MAX_TEMP));
         weatherUpdateRequest.getDataMap().putInt("low", (int) query.getDouble(INDEX_MIN_TEMP));
+        weatherUpdateRequest.getDataMap().putLong("timestamp", System.currentTimeMillis());
 
 
         final ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
-        Bitmap weatherIcon = BitmapFactory.decodeResource(context.getResources(), Utility.getArtResourceForWeatherCondition(query.getInt(INDEX_WEATHER_ID)));
-        weatherIcon.compress(Bitmap.CompressFormat.PNG, 100, imageBytes);
-        Asset weatherIconAsset = Asset.createFromBytes(imageBytes.toByteArray());
-        weatherUpdateRequest.getDataMap().putAsset("weatherIcon", weatherIconAsset);
+        String artUrl = Utility.getArtUrlForWeatherCondition(context, query.getInt(INDEX_WEATHER_ID));
 
-        PutDataRequest putDataRequest = weatherUpdateRequest.asPutDataRequest();
+        int artResourceId = Utility.getArtResourceForWeatherCondition(query.getInt(INDEX_WEATHER_ID));
+        int size = context.getResources().getDimensionPixelSize(R.dimen.wearable_large_icon_default);
 
-        GoogleApiClient googleApiClient = getGoogleApiClient();
-        googleApiClient.connect();
+        try {
+            Bitmap weatherIcon = Glide.with(context)
+                            .load(artUrl)
+                            .asBitmap()
+                            .error(artResourceId)
+                            .fitCenter()
+                            .into(size, size)
+                            .get();
 
-        Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
+
+            weatherIcon.compress(Bitmap.CompressFormat.PNG, 100, imageBytes);
+            Asset weatherIconAsset = Asset.createFromBytes(imageBytes.toByteArray());
+            weatherUpdateRequest.getDataMap().putAsset("weatherIcon", weatherIconAsset);
+
+            PutDataRequest putDataRequest = weatherUpdateRequest.asPutDataRequest();
+
+            GoogleApiClient googleApiClient = getGoogleApiClient();
+            googleApiClient.connect();
+
+            Wearable.DataApi.putDataItem(googleApiClient, putDataRequest);
+
+        } catch(Exception ex){
+            Log.e(LOG_TAG, "Failed to notify wearable");
+        }
     }
 
     private GoogleApiClient getGoogleApiClient(){
