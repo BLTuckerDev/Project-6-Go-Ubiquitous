@@ -61,8 +61,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
     static Bitmap currentConditionsImage;
 
-    static int highTemp = 76;// Integer.MIN_VALUE;
-    static int lowTemp = 15;//Integer.MIN_VALUE;
+    static int highTemp = Integer.MIN_VALUE;
+    static int lowTemp = Integer.MIN_VALUE;
 
     private static Engine engineInstance;
 
