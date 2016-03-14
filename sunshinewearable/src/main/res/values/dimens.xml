@@ -17,5 +17,5 @@
     <dimen name="line_y_offset">130dp</dimen>
     <dimen name="round_line_x_offset">90dp</dimen>
     <dimen name="square_line_x_offset">75dp</dimen>
-    <dimen name="current_weather_y_offset">190dp</dimen>
+    <dimen name="current_weather_y_offset">170dp</dimen>
 </resources>
