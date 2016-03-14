@@ -204,7 +204,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         }
 
         private GoogleApiClient getGoogleApiClient(){
-            return new GoogleApiClient.Builder(this)
+            return new GoogleApiClient.Builder(getApplicationContext())
                     .addApi(Wearable.API)
                     .build();
         }
