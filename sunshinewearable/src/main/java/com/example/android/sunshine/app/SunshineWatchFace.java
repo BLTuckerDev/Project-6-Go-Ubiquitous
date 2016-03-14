@@ -36,6 +36,11 @@ import android.support.wearable.watchface.WatchFaceStyle;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
+
 import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.Date;
@@ -68,15 +73,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
     }
 
     @Override
-    public void onDestroy() {
-        engineInstance = null;
-        super.onDestroy();
-    }
-
-    @Override
     public Engine onCreateEngine() {
-        engineInstance = new Engine();
-        return engineInstance;
+        return new Engine();
     }
 
 
@@ -123,6 +121,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
 
+            engineInstance = this;
+
             setWatchFaceStyle(new WatchFaceStyle.Builder(SunshineWatchFace.this)
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_SHORT)
                     .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
@@ -144,6 +144,7 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             initializeLowTempPaint();
 
             currentTime = Calendar.getInstance();
+            notifyHandheld();
         }
 
         private void initializeBackgroundPaint(){
@@ -188,9 +189,30 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             lowTempPaint.setAntiAlias(true);
         }
 
+        private void notifyHandheld(){
+            PutDataMapRequest dataSyncRequest = PutDataMapRequest.create("/SunshineWatchFaceListenerService/Sync");
+
+            dataSyncRequest.getDataMap().putLong("timestamp", System.currentTimeMillis());
+
+            PutDataRequest dataPutRequest = dataSyncRequest.asPutDataRequest();
+
+            GoogleApiClient googleApiClient = getGoogleApiClient();
+            googleApiClient.connect();
+
+            Wearable.DataApi.putDataItem(googleApiClient, dataPutRequest);
+            googleApiClient.disconnect();
+        }
+
+        private GoogleApiClient getGoogleApiClient(){
+            return new GoogleApiClient.Builder(this)
+                    .addApi(Wearable.API)
+                    .build();
+        }
+
         @Override
         public void onDestroy() {
             engineUpdateHandler.removeMessages(MSG_UPDATE_TIME);
+            engineInstance = null;
             super.onDestroy();
         }
 

@@ -537,8 +537,6 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
 
         PutDataMapRequest weatherUpdateRequest = PutDataMapRequest.create("/SunshineWearableListenerService/WeatherData");
 
-        //TODO when the watch service starts, notify the app to sync so taht this code will then update the wearable
-
         double highTemp = query.getDouble(INDEX_MAX_TEMP);
         double lowTemp = query.getDouble(INDEX_MIN_TEMP);
 
