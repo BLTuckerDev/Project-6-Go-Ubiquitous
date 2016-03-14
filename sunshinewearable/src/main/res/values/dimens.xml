@@ -18,4 +18,5 @@
     <dimen name="round_line_x_offset">90dp</dimen>
     <dimen name="square_line_x_offset">75dp</dimen>
     <dimen name="current_weather_y_offset">170dp</dimen>
+    <dimen name="weather_icon_size">24dp</dimen>
 </resources>

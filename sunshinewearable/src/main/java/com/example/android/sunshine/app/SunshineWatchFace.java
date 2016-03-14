@@ -61,8 +61,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
 
     static Bitmap currentConditionsImage;
 
-    static int highTemp = Integer.MIN_VALUE;
-    static int lowTemp = Integer.MIN_VALUE;
+    static int highTemp = 76;// Integer.MIN_VALUE;
+    static int lowTemp = 15;//Integer.MIN_VALUE;
 
     private static Engine engineInstance;
 
@@ -100,20 +100,10 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         boolean isAmbient;
         Calendar currentTime;
 
-        float timeOffsetX;
         float timeOffsetY;
-
-        float dateOffsetX;
         float dateOffsetY;
-
-        float lineOffsetX;
         float lineOffsetY;
-
         float currentWeatherOffsetY;
-
-        float currentWeatherBitmapOffsetX;
-        float highTempOffsetX;
-        float lowTempOffsetX;
 
         boolean supportsLowBitAmbient;
 
@@ -258,19 +248,9 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             Resources resources = SunshineWatchFace.this.getResources();
             boolean isRound = insets.isRound();
 
-            timeOffsetX = resources.getDimension(isRound ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
             float textSize = resources.getDimension(isRound ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
-
-            dateOffsetX = resources.getDimension(isRound ? R.dimen.round_date_x_offset : R.dimen.square_date_x_offset);
             float dateTextSize = resources.getDimension(isRound ? R.dimen.round_date_text_size : R.dimen.square_date_text_size);
-
-            lineOffsetX = resources.getDimension(isRound ? R.dimen.round_line_x_offset : R.dimen.square_line_x_offset);
-
-            highTempOffsetX = dateOffsetX + 95;
             float highTempTextSize = resources.getDimension(isRound ? R.dimen.round_high_temp_text_size : R.dimen.square_high_temp_text_size);
-
-
-            lowTempOffsetX = dateOffsetX + 160;
             float lowTempTextSize = resources.getDimension(isRound ? R.dimen.round_low_temp_text_size : R.dimen.square_low_temp_text_size);
 
             timePaint.setTextSize(textSize);
@@ -311,12 +291,12 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             drawBackground(canvas, bounds);
 
-            drawTime(canvas);
+            drawTime(canvas, bounds);
             if(!isInAmbientMode()){
-                drawDate(canvas);
-                drawDividerLine(canvas);
-                drawWeatherIcon(canvas);
-                drawHighAndLowTemp(canvas);
+                drawDate(canvas, bounds);
+                drawDividerLine(canvas, bounds);
+                drawWeatherIcon(canvas, bounds);
+                drawHighAndLowTemp(canvas, bounds);
             }
         }
 
@@ -328,33 +308,33 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             }
         }
 
-        private void drawTime(Canvas canvas){
+        private void drawTime(Canvas canvas, Rect bounds){
             currentTime.setTimeInMillis(System.currentTimeMillis());
             String timeText = String.format("%d:%02d", currentTime.get(Calendar.HOUR_OF_DAY), currentTime.get(Calendar.MINUTE));
-            canvas.drawText(timeText, timeOffsetX, timeOffsetY, timePaint);
+            canvas.drawText(timeText, bounds.centerX() - timePaint.measureText(timeText) / 2, timeOffsetY, timePaint);
         }
 
-        private void drawDate(Canvas canvas){
+        private void drawDate(Canvas canvas, Rect bounds){
             String dateText = String.format("%s, %s %02d %04d",
                     currentTime.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault()),
                     currentTime.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.getDefault()),
                     currentTime.get(Calendar.DAY_OF_MONTH),
                     currentTime.get(Calendar.YEAR));
-            canvas.drawText(dateText, dateOffsetX, dateOffsetY, datePaint);
+            canvas.drawText(dateText, bounds.centerX() - datePaint.measureText(dateText) / 2, dateOffsetY, datePaint);
         }
 
-        private void drawDividerLine(Canvas canvas){
-            canvas.drawLine(lineOffsetX, lineOffsetY, lineOffsetX + 50, lineOffsetY, linePaint);
+        private void drawDividerLine(Canvas canvas, Rect bounds){
+            canvas.drawLine(bounds.width() * .25f, lineOffsetY, bounds.width() * .75f, lineOffsetY, linePaint);
         }
 
-        private void drawWeatherIcon(Canvas canvas){
+        private void drawWeatherIcon(Canvas canvas, Rect bounds){
             if(currentConditionsImage != null){
-                canvas.drawBitmap(currentConditionsImage, dateOffsetX + 10, currentWeatherOffsetY - 45, null);
+                int imageWidth = getApplicationContext().getResources().getDimensionPixelSize(R.dimen.weather_icon_size);
+                canvas.drawBitmap(currentConditionsImage, (bounds.width() * .15f) - imageWidth / 2, currentWeatherOffsetY - 45, null);
             }
         }
 
-        private void drawHighAndLowTemp(Canvas canvas){
-
+        private void drawHighAndLowTemp(Canvas canvas, Rect bounds){
             if(highTemp == Integer.MIN_VALUE || lowTemp == Integer.MIN_VALUE){
                 return;
             }
@@ -364,8 +344,8 @@ public class SunshineWatchFace extends CanvasWatchFaceService {
             String highTempString = String.format(tempFormat, highTemp);
             String lowTempString = String.format(tempFormat, lowTemp);
 
-            canvas.drawText(highTempString, highTempOffsetX, currentWeatherOffsetY, highTempPaint);
-            canvas.drawText(lowTempString, lowTempOffsetX, currentWeatherOffsetY, lowTempPaint);
+            canvas.drawText(highTempString, bounds.centerX() - highTempPaint.measureText(highTempString) / 2, currentWeatherOffsetY, highTempPaint);
+            canvas.drawText(lowTempString, (bounds.width() * .75f) - lowTempPaint.measureText(lowTempString) / 2, currentWeatherOffsetY, lowTempPaint);
         }
 
 
